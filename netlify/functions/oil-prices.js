@@ -1,26 +1,23 @@
 exports.handler = async function(event, context) {
-  const apiKey = process.env.ALPHA_VANTAGE_KEY;
+  const apiKey1 = process.env.ALPHA_VANTAGE_KEY;
+  const apiKey2 = process.env.ALPHA_VANTAGE_KEY_2;
 
-  if (!apiKey) {
+  if (!apiKey1 || !apiKey2) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'API key not configured' })
+      body: JSON.stringify({ error: 'API keys not configured' })
     };
   }
 
-  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
   try {
-    // Fetch Brent first
-    const brentRes = await fetch(`https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${apiKey}`);
+    // Use separate keys for each call to avoid rate limiting
+    const [brentRes, wtiRes] = await Promise.all([
+      fetch(`https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${apiKey1}`),
+      fetch(`https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${apiKey2}`)
+    ]);
+
     const brentData = await brentRes.json();
-
-    // Wait 15 seconds before next call to respect free tier rate limit
-    await delay(15000);
-
-    // Then fetch WTI
-    const wtiRes = await fetch(`https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${apiKey}`);
-    const wtiData = await wtiRes.json();
+    const wtiData   = await wtiRes.json();
 
     const brentLatest    = brentData?.data?.[0];
     const brentPrev      = brentData?.data?.[1];
