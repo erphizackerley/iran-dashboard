@@ -8,11 +8,17 @@ exports.handler = async function(event, context) {
     };
   }
 
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
   try {
-    // Fetch sequentially to avoid rate limiting on free tier
+    // Fetch Brent first
     const brentRes = await fetch(`https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${apiKey}`);
     const brentData = await brentRes.json();
 
+    // Wait 15 seconds before next call to respect free tier rate limit
+    await delay(15000);
+
+    // Then fetch WTI
     const wtiRes = await fetch(`https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${apiKey}`);
     const wtiData = await wtiRes.json();
 
