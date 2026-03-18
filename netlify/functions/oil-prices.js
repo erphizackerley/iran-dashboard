@@ -9,17 +9,28 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    // Fetch Brent and WTI in parallel
-    const [brentRes, wtiRes] = await Promise.all([
-      fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=BZ=F&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=CL=F&apikey=${apiKey}`)
+    const [wtiRes, brentRes] = await Promise.all([
+      fetch(`https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${apiKey}`),
+      fetch(`https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${apiKey}`)
     ]);
 
-    const brentData = await brentRes.json();
     const wtiData = await wtiRes.json();
+    const brentData = await brentRes.json();
 
-    const brentQuote = brentData['Global Quote'];
-    const wtiQuote = wtiData['Global Quote'];
+    const wtiLatest  = wtiData?.data?.[0];
+    const wtiPrev    = wtiData?.data?.[1];
+    const brentLatest = brentData?.data?.[0];
+    const brentPrev   = brentData?.data?.[1];
+
+    const wtiPrice       = wtiLatest   ? parseFloat(wtiLatest.value)   : null;
+    const wtiPrevPrice   = wtiPrev     ? parseFloat(wtiPrev.value)     : null;
+    const brentPrice     = brentLatest ? parseFloat(brentLatest.value) : null;
+    const brentPrevPrice = brentPrev   ? parseFloat(brentPrev.value)   : null;
+
+    const wtiChange      = wtiPrice && wtiPrevPrice     ? wtiPrice - wtiPrevPrice     : null;
+    const wtiChangePct   = wtiChange && wtiPrevPrice    ? (wtiChange / wtiPrevPrice) * 100   : null;
+    const brentChange    = brentPrice && brentPrevPrice ? brentPrice - brentPrevPrice : null;
+    const brentChangePct = brentChange && brentPrevPrice ? (brentChange / brentPrevPrice) * 100 : null;
 
     return {
       statusCode: 200,
@@ -28,17 +39,17 @@ exports.handler = async function(event, context) {
         'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify({
-        brent: brentQuote ? {
-          price: parseFloat(brentQuote['05. price']),
-          change: parseFloat(brentQuote['09. change']),
-          changePct: parseFloat(brentQuote['10. change percent'].replace('%', '')),
-          updated: brentQuote['07. latest trading day']
+        brent: brentPrice ? {
+          price: brentPrice,
+          change: brentChange,
+          changePct: brentChangePct,
+          updated: brentLatest.date
         } : null,
-        wti: wtiQuote ? {
-          price: parseFloat(wtiQuote['05. price']),
-          change: parseFloat(wtiQuote['09. change']),
-          changePct: parseFloat(wtiQuote['10. change percent'].replace('%', '')),
-          updated: wtiQuote['07. latest trading day']
+        wti: wtiPrice ? {
+          price: wtiPrice,
+          change: wtiChange,
+          changePct: wtiChangePct,
+          updated: wtiLatest.date
         } : null
       })
     };
