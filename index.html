@@ -2,50 +2,863 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>API Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iran Conflict: Market Impact Report — Marex Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  body { background: #0E0E28; color: #FAFAFC; font-family: monospace; padding: 40px; }
-  .result { background: #1C1B4A; padding: 20px; margin-top: 20px; white-space: pre; font-size: 13px; }
-  button { background: #843FDC; color: white; border: none; padding: 10px 24px; cursor: pointer; font-family: monospace; font-size: 13px; }
-  button:hover { background: #6030B0; }
-  .ok { color: #4ecdb8; }
-  .err { color: #FF846A; }
+:root{
+  --pg:#0E0E28;--hd:#080818;--card:#1C1B4A;--brd:#252550;--brd2:#1A1A3A;
+  --t1:#FAFAFC;--t2:#D0D0E0;--t3:#9090A8;
+  --purple:#793690;--violet:#843FDC;--vlt50:#CF9EED;--vlt20:#2A1550;
+  --green:#2D8D79;--gpale:#0D2E28;--red:#C0392B;--rpale:#2A0D0A;
+  --amber:#FFB443;--apale:#2A1E00;--coral:#FF846A;
+  --pos:#4ecdb8;--neg:#FF846A;
+  --ff:'DM Sans',system-ui,sans-serif;--fm:'DM Mono','Courier New',monospace;--fs:'Libre Baskerville',Georgia,serif
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--pg);color:var(--t1);font-family:var(--ff);font-size:14px;line-height:1.5}
+.hdr{background:var(--hd);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:50}
+.logo{display:flex;align-items:center;gap:12px}
+.lsq{width:26px;height:26px;background:#FAFAFC;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lnm{font-weight:600;font-size:13px;color:var(--t1)}
+.pipe{width:1px;height:18px;background:rgba(250,250,252,.2)}
+.rtl{font-size:11px;color:rgba(250,250,252,.6)}
+.hmeta{display:flex;align-items:center;gap:12px}
+.dbadge{background:var(--coral);color:#fff;font-family:var(--fm);font-size:8px;font-weight:500;letter-spacing:1px;padding:3px 9px;text-transform:uppercase}
+.dstamp{font-family:var(--fm);font-size:9px;color:rgba(250,250,252,.5)}
+.ticker-bar{background:var(--hd);height:26px;display:flex;align-items:center;overflow:hidden;border-bottom:1px solid var(--brd2)}
+.ticker-tag{flex-shrink:0;background:var(--coral);color:#fff;font-family:var(--fm);font-size:7px;font-weight:600;letter-spacing:1.5px;padding:0 12px;height:100%;display:flex;align-items:center;text-transform:uppercase}
+.ticker-wrap{flex:1;overflow:hidden}
+.ticker-inner{display:flex;white-space:nowrap;animation:tick 50s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:5px;padding:0 24px;font-family:var(--fm);font-size:8.5px;color:rgba(250,250,252,.65);border-right:1px solid var(--brd2)}
+.ti .lbl{color:var(--vlt50);font-weight:500}.ti .dn{color:var(--coral)}
+.kpi-row{background:var(--hd);border-bottom:2px solid var(--brd);display:grid;grid-template-columns:repeat(8,1fr)}
+.kc{padding:12px 16px 10px;border-right:1px solid var(--brd2);position:relative;transition:background .15s}
+.kc:last-child{border-right:none}.kc:hover{background:#0A0A20}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent}
+.kc.neg::before{background:var(--violet)}.kc.pos::before{background:var(--green)}.kc.neu::before{background:var(--brd)}
+.klbl{font-family:var(--fm);font-size:7.5px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.kval{font-family:var(--fs);font-size:18px;font-weight:700;color:var(--t1);line-height:1;margin-bottom:3px}
+.kchg{font-family:var(--fm);font-size:8.5px}.kchg.pos{color:var(--pos)}.kchg.neg{color:var(--neg)}.kchg.neu{color:var(--t3)}
+.ksrc{font-family:var(--fm);font-size:7px;color:#606080;margin-top:2px}
+.tabs{background:var(--hd);border-bottom:1px solid var(--brd);display:flex;padding:0 28px;position:sticky;top:52px;z-index:40}
+.tb{font-size:11.5px;font-weight:500;color:var(--t3);padding:11px 16px;cursor:pointer;background:none;border:none;border-bottom:2px solid transparent;display:flex;align-items:center;gap:5px;transition:color .15s,border-color .15s;white-space:nowrap}
+.tb:hover{color:var(--t1)}.tb.on{color:var(--t1);border-bottom-color:var(--purple);font-weight:600}
+.tdot{width:5px;height:5px;border-radius:50%;background:var(--brd)}.tb.on .tdot{background:var(--purple)}
+.wrap{max-width:1400px;margin:0 auto}
+.pnl{display:none}.pnl.on{display:block}
+.sec{padding:24px 28px;border-bottom:1px solid var(--brd2)}.sec:last-child{border-bottom:none}
+.sh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+.stit{font-size:10.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);display:flex;align-items:center;gap:7px}
+.stit::before{content:'';display:inline-block;width:3px;height:11px;background:var(--purple)}
+.snote{font-family:var(--fm);font-size:8.5px;color:var(--t3)}
+.g{display:grid;gap:12px}.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}.c4{grid-template-columns:repeat(4,1fr)}.c21{grid-template-columns:2fr 1fr}
+.card{background:var(--card);border:1px solid var(--brd);padding:16px 18px;transition:border-color .2s}
+.card:hover{border-color:#3A3A6A}
+.clbl{font-family:var(--fm);font-size:8px;font-weight:500;letter-spacing:1.2px;text-transform:uppercase;color:var(--t3);margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
+.cbdg{font-family:var(--fm);font-size:6.5px;padding:2px 6px;text-transform:uppercase;border-radius:2px}
+.be{background:#0D2E28;color:#4ecdb8}.bm{background:var(--vlt20);color:var(--vlt50)}.bs{background:#2A1E00;color:var(--amber)}.bw{background:var(--rpale);color:#ff6b5b}
+.cval{font-family:var(--fs);font-size:24px;font-weight:700;color:var(--t1);line-height:1;margin-bottom:5px}
+.cchg{font-family:var(--fm);font-size:9.5px;margin-bottom:3px}.cchg.pos{color:var(--pos)}.cchg.neg{color:var(--neg)}.cchg.neu{color:var(--t3)}
+.csub{font-size:10.5px;color:var(--t2);line-height:1.55;margin-top:7px;padding-top:7px;border-top:1px solid var(--brd2)}
+.bnch{background:linear-gradient(135deg,#1C1B4A,#110E2A);border:1px solid rgba(132,63,220,.2);padding:22px 26px;position:relative;overflow:hidden}
+.bnch::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--vlt50))}
+.blbl{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(250,250,252,.5);margin-bottom:10px}
+.bval{font-family:var(--fs);font-size:36px;font-weight:700;color:var(--t1);letter-spacing:-1px;line-height:1;margin-bottom:5px}
+.bchg{font-family:var(--fm);font-size:10.5px;margin-bottom:10px}.bchg.neg{color:#f4a27a}
+.bnote{font-size:10.5px;color:rgba(250,250,252,.65);line-height:1.55;border-top:1px solid rgba(250,250,252,.1);padding-top:10px}
+table.dt{width:100%;border-collapse:collapse;font-size:11.5px}
+table.dt thead tr{border-bottom:1px solid var(--violet)}
+table.dt th{font-family:var(--fm);font-size:7.5px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--t3);text-align:left;padding:7px 9px}
+table.dt td{padding:9px 9px;border-bottom:1px solid var(--brd2);color:var(--t2);vertical-align:top;line-height:1.4}
+table.dt tbody tr:hover td{background:#0E0E24}
+table.dt td.p{font-weight:600;color:var(--t1)}
+table.dt td.pos{color:var(--pos);font-family:var(--fm);font-size:10.5px}
+table.dt td.neg2{color:var(--neg);font-family:var(--fm);font-size:10.5px}
+table.dt td.warn{color:var(--amber);font-family:var(--fm);font-size:10.5px}
+table.dt td.mn{font-family:var(--fm);font-size:10.5px}
+table.dt td.dm{color:var(--t3);font-size:10.5px}
+.pill{display:inline-flex;align-items:center;gap:4px;font-family:var(--fm);font-size:8px;font-weight:500;padding:3px 7px;border-radius:2px;white-space:nowrap}
+.pill .d{width:4px;height:4px;border-radius:50%}
+.pr{background:var(--rpale);color:#ff6b5b}.pr .d{background:var(--red)}
+.pa{background:var(--apale);color:var(--amber)}.pa .d{background:var(--amber)}
+.pg{background:var(--gpale);color:var(--pos)}.pg .d{background:var(--green)}
+.pgy{background:var(--brd2);color:var(--t2)}.pgy .d{background:var(--t3)}
+.tl-row{display:grid;grid-template-columns:86px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--brd2);position:relative}
+.tl-row:first-child{padding-top:0}
+.tl-row::before{content:'';position:absolute;left:74px;top:16px;width:7px;height:7px;border-radius:50%;background:var(--brd);border:2px solid var(--pg);z-index:1}
+.tl-row.cr::before{background:var(--red)}.tl-row.hi::before{background:#E67E22}.tl-row.md::before{background:var(--purple)}
+.tl-row.td::before{background:var(--violet);box-shadow:0 0 0 3px rgba(132,63,220,.25);width:9px;height:9px;left:73px}
+.tld{font-family:var(--fm);font-size:8.5px;color:var(--t3);padding-top:2px;line-height:1.5;text-align:right;padding-right:14px}
+.tlc{font-size:11.5px;color:var(--t2);line-height:1.55}.tlc strong{font-weight:600;color:var(--t1);display:block;margin-bottom:2px}
+.wi{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd2)}.wi:last-child{border-bottom:none}
+.ws{font-family:var(--fm);font-size:10.5px;font-weight:500;color:var(--t1)}.wn{font-size:9.5px;color:var(--t3);margin-top:1px}
+.ni{padding:13px 0;border-bottom:1px solid var(--brd2);display:grid;grid-template-columns:56px 1fr;gap:12px;cursor:pointer;transition:background .12s}
+.ni:hover{background:#0E0E24;margin:0 -28px;padding:13px 28px}
+.nd{font-family:var(--fm);font-size:8.5px;color:var(--t3);line-height:1.5}
+.nr{display:inline-block;width:5px;height:5px;border-radius:50%;margin-top:3px}.rf{background:var(--red)}.rr{background:var(--purple)}
+.ns{font-family:var(--fm);font-size:7.5px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--vlt50);margin-bottom:2px}
+.nh{font-size:12.5px;font-weight:600;color:var(--t1);line-height:1.4;margin-bottom:3px}
+.np{font-size:10.5px;color:var(--t2);line-height:1.55}
+.ntag{display:inline-block;font-family:var(--fm);font-size:6.5px;padding:2px 6px;text-transform:uppercase;margin-top:4px;margin-right:3px;border-radius:2px}
+.to{background:#0D2E28;color:var(--pos)}.tw{background:var(--rpale);color:#ff6b5b}.tm{background:var(--vlt20);color:var(--vlt50)}.tg{background:var(--apale);color:var(--amber)}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.sc{padding:15px 16px;border:1px solid var(--brd);background:var(--card);position:relative}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc-bear::before{background:var(--red)}.sc-base::before{background:var(--purple)}.sc-bull::before{background:var(--green)}
+.sclbl{font-family:var(--fm);font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.sc-bear .sclbl{color:#ff6b5b}.sc-base .sclbl{color:var(--vlt50)}.sc-bull .sclbl{color:var(--pos)}
+.sct{font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:5px}
+.scp{font-family:var(--fs);font-size:20px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.scx{font-size:10.5px;color:var(--t2);line-height:1.55}
+.comm{background:#110E2A;border-left:4px solid var(--purple);padding:18px 22px}
+.cmt{font-family:var(--fm);font-size:8px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--vlt50)}
+.cmb{font-family:var(--fm);font-size:7.5px;color:var(--t3);margin-top:2px}
+.cmx{font-size:12px;color:var(--t2);line-height:1.75;margin-top:12px}.cmx p{margin-bottom:9px}.cmx p:last-child{margin-bottom:0}.cmx strong{color:var(--t1)}
+.ftr{background:var(--hd);border-top:1px solid var(--brd2);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+.fl{font-size:9.5px;color:var(--t3);line-height:1.6}.fr{font-family:var(--fm);font-size:8.5px;color:var(--t3);text-align:right}
+.div{height:1px;background:var(--brd2);margin:12px 0}
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(4,1fr)}.c4{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.kpi-row{grid-template-columns:repeat(2,1fr)}.c2,.c3,.c21{grid-template-columns:1fr}.sc-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-  <h2>Oil Price Function Test</h2>
-  <p>Click the button to test the Netlify function is fetching live data from Alpha Vantage.</p>
-  <button onclick="test()">Test Live Oil Prices</button>
-  <div class="result" id="result">Waiting...</div>
+
+<div class="hdr">
+  <div class="logo">
+    <div class="lsq"><svg viewBox="0 0 18 14" width="18" height="14" fill="none"><rect width="18" height="3" fill="#1C1B4A"/><rect y="5.5" width="12" height="3" fill="#1C1B4A"/><rect y="11" width="18" height="3" fill="#1C1B4A"/></svg></div>
+    <span class="lnm">Marex Solutions</span>
+    <div class="pipe"></div>
+    <span class="rtl">Iran Conflict — Market Impact Report</span>
+  </div>
+  <div class="hmeta">
+    <div class="dbadge">Day 17</div>
+    <div class="dstamp">17 March 2026 · 09:00 ET</div>
+  </div>
+</div>
+
+<div class="ticker-bar">
+
+  <div class="ticker-wrap"><div class="ticker-inner">
+    <div class="ti"><span class="lbl">BRENT</span><span class="dn">$103.00</span> +4.19% — Hormuz coalition unconfirmed</div>
+    <div class="ti"><span class="lbl">WTI</span><span class="dn">$95.20</span> +2.96% — 52-week high $113.41</div>
+    <div class="ti"><span class="lbl">GOLD</span> $5,016/oz — safe-haven flows persist</div>
+    <div class="ti"><span class="lbl">GASOLINE</span><span class="dn">$3.67/gal</span> — up 23% in 14 days</div>
+    <div class="ti"><span class="lbl">DXY</span> 99.78 — 10-month high</div>
+    <div class="ti"><span class="lbl">EUR/USD</span> 1.1515</div>
+    <div class="ti"><span class="lbl">US 10Y</span> 4.23% — FOMC holds Wed 18 Mar</div>
+    <div class="ti"><span class="lbl">VIX</span> 23.43 — easing from conflict peak &gt;30</div>
+    <div class="ti"><span class="lbl">HORMUZ</span> First cargo AIS — Karachi tanker (17 Mar)</div>
+    <div class="ti"><span class="lbl">FUJAIRAH</span> Loadings suspended — drone fires continuing</div>
+    <div class="ti"><span class="lbl">BRENT</span><span class="dn">$103.00</span> +4.19% — Hormuz coalition unconfirmed</div>
+    <div class="ti"><span class="lbl">WTI</span><span class="dn">$95.20</span> +2.96% — 52-week high $113.41</div>
+    <div class="ti"><span class="lbl">GOLD</span> $5,016/oz — safe-haven flows persist</div>
+    <div class="ti"><span class="lbl">GASOLINE</span><span class="dn">$3.67/gal</span> — up 23% in 14 days</div>
+    <div class="ti"><span class="lbl">DXY</span> 99.78 — 10-month high</div>
+    <div class="ti"><span class="lbl">EUR/USD</span> 1.1515</div>
+    <div class="ti"><span class="lbl">US 10Y</span> 4.23% — FOMC holds Wed 18 Mar</div>
+    <div class="ti"><span class="lbl">VIX</span> 23.43 — easing from conflict peak &gt;30</div>
+    <div class="ti"><span class="lbl">HORMUZ</span> First cargo AIS — Karachi tanker (17 Mar)</div>
+    <div class="ti"><span class="lbl">FUJAIRAH</span> Loadings suspended — drone fires continuing</div>
+  </div></div>
+</div>
+
+<div class="kpi-row">
+  <div class="kc neg"><div class="klbl">Brent Crude</div><div class="kval" id="kpi-brent-val">$103.00</div><div class="kchg neg" id="kpi-brent-chg">+$4.14 · +4.19%</div><div class="ksrc" id="kpi-brent-src">ICE · 17 Mar</div></div>
+  <div class="kc neg"><div class="klbl">WTI Crude</div><div class="kval" id="kpi-wti-val">$95.20</div><div class="kchg neg" id="kpi-wti-chg">+$2.74 · +2.96%</div><div class="ksrc" id="kpi-wti-src">NYMEX · 17 Mar</div></div>
+  <div class="kc neg"><div class="klbl">Gold Spot</div><div class="kval">$5,016</div><div class="kchg neg">Near ATH $5,595</div><div class="ksrc">COMEX · 17 Mar</div></div>
+  <div class="kc neu"><div class="klbl">Henry Hub</div><div class="kval">$3.13</div><div class="kchg neg">−3.0% · April futures</div><div class="ksrc">EIA · 14 Mar</div></div>
+  <div class="kc neg"><div class="klbl">US 10Y Yield</div><div class="kval">4.23%</div><div class="kchg neg">+13bps last wk</div><div class="ksrc">UST · 17 Mar</div></div>
+  <div class="kc neu"><div class="klbl">DXY Index</div><div class="kval">99.78</div><div class="kchg neg">10-month high</div><div class="ksrc">ICE · 17 Mar</div></div>
+  <div class="kc neu"><div class="klbl">VIX</div><div class="kval">23.43</div><div class="kchg pos">−13.5% today</div><div class="ksrc">CBOE · 17 Mar</div></div>
+  <div class="kc neg"><div class="klbl">US Gasoline</div><div class="kval">$3.67</div><div class="kchg neg">+23% in 14 days</div><div class="ksrc">AAA · 14 Mar</div></div>
+</div>
+
+<nav class="tabs">
+  <button class="tb on" id="tb-energy" onclick="sw('energy')"><div class="tdot"></div>Energy Markets</button>
+  <button class="tb" id="tb-macro" onclick="sw('macro')"><div class="tdot"></div>Macro &amp; Fed</button>
+  <button class="tb" id="tb-equities" onclick="sw('equities')"><div class="tdot"></div>Equities</button>
+  <button class="tb" id="tb-conflict" onclick="sw('conflict')"><div class="tdot"></div>Conflict Timeline</button>
+  <button class="tb" id="tb-polymarket" onclick="sw('polymarket')"><div class="tdot"></div>Polymarket Odds</button>
+  <button class="tb" id="tb-strategy" onclick="sw('strategy')"><div class="tdot"></div>Strategy &amp; Analysis</button>
+</nav>
+
+<div class="wrap">
+
+<div class="pnl on" id="pnl-energy">
+  <div class="sec">
+    <div class="sh"><div class="stit">Crude Oil Benchmarks</div><div class="snote">Sources: CNBC, Investing.com, EIA STEO — 17 Mar 2026</div></div>
+    <div class="g c3">
+      <div class="bnch">
+        <div class="blbl">Brent Crude (ICE Front Month)</div>
+        <div class="bval" id="bench-brent-val">$103.00</div>
+        <div class="bchg neg" id="bench-brent-chg">+$4.14 (+4.19%) today · +50.1% YTD from $68.65</div>
+        <div class="bnote">EIA March STEO: Brent to remain above $95/bbl for 2 months. 52-week range: $61.87–$113.41. Highest since Sep 2023. Hormuz closure adding ~$20–25 war premium.</div>
+      </div>
+      <div class="bnch">
+        <div class="blbl">WTI Crude (Cushing, Oklahoma)</div>
+        <div class="bval" id="bench-wti-val">$95.20</div>
+        <div class="bchg neg" id="bench-wti-chg">+$2.74 (+2.96%) today · +42.4% over past 12 months</div>
+        <div class="bnote">Today's range: $92.93–$95.39. 52-week low $54.98. US shale producers could earn extra $63.4B annually if WTI averages $100/bbl. Drilling activity rising sharply.</div>
+      </div>
+      <div class="card">
+        <div class="clbl">Brent / WTI Spread &amp; Conflict Indicator</div>
+        <div style="display:flex;align-items:center;gap:18px;margin-bottom:11px">
+          <svg viewBox="0 0 120 70" width="110" height="66">
+            <path d="M 10 65 A 50 50 0 0 1 110 65" fill="none" stroke="#2A2A50" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 10 65 A 50 50 0 0 1 43 22" fill="none" stroke="#2D8D79" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+            <path d="M 43 22 A 50 50 0 0 1 77 22" fill="none" stroke="#FFB443" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+            <path d="M 77 22 A 50 50 0 0 1 110 65" fill="none" stroke="#C0392B" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+            <line x1="60" y1="65" x2="98" y2="28" stroke="#FAFAFC" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="60" cy="65" r="4" fill="#843FDC"/>
+            <text x="6" y="72" font-size="7" fill="#9090A8" font-family="DM Mono,monospace">LOW</text>
+            <text x="86" y="72" font-size="7" fill="#9090A8" font-family="DM Mono,monospace">HIGH</text>
+          </svg>
+          <div>
+            <div style="font-family:var(--fm);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">Hormuz Risk</div>
+            <div style="font-family:var(--fs);font-size:19px;font-weight:700;color:#ff6b5b">Elevated</div>
+            <div style="font-family:var(--fm);font-size:8.5px;color:var(--t2)">21 vessel incidents</div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <div style="font-family:var(--fm);font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:7px">Brent / WTI Spread</div>
+        <div style="font-family:var(--fs);font-size:22px;font-weight:700;color:var(--t1);margin-bottom:3px">$7.80<span style="font-size:11px;font-family:var(--fm);color:var(--t3);font-weight:400"> /bbl</span></div>
+        <div style="font-size:10.5px;color:var(--t2);line-height:1.5">Brent premium to WTI. Widening spread reflects tighter Atlantic Basin supply and Hormuz-specific disruption.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><div class="stit">Crude Oil — Weekly Closes, Jan–Mar 2026</div><div class="snote">Source: Investing.com · 04 Jan – 17 Mar 2026</div></div>
+    <div class="card" style="padding:24px 24px 18px">
+      <svg viewBox="0 0 840 200" width="100%" height="200" style="overflow:visible;display:block">
+        <defs>
+          <linearGradient id="bG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#843FDC" stop-opacity=".3"/><stop offset="100%" stop-color="#843FDC" stop-opacity=".02"/></linearGradient>
+          <linearGradient id="wG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4D2480" stop-opacity=".22"/><stop offset="100%" stop-color="#4D2480" stop-opacity=".02"/></linearGradient>
+        </defs>
+        <line x1="40" y1="20.7" x2="800" y2="20.7" stroke="#252550" stroke-width="1"/>
+        <line x1="40" y1="42.1" x2="800" y2="42.1" stroke="#252550" stroke-width="1"/>
+        <line x1="40" y1="63.6" x2="800" y2="63.6" stroke="#252550" stroke-width="1"/>
+        <line x1="40" y1="85.0" x2="800" y2="85.0" stroke="#252550" stroke-width="1"/>
+        <line x1="40" y1="106.4" x2="800" y2="106.4" stroke="#252550" stroke-width="1"/>
+        <line x1="40" y1="127.9" x2="800" y2="127.9" stroke="#252550" stroke-width="1"/>
+        <line x1="40" y1="149.3" x2="800" y2="149.3" stroke="#252550" stroke-width="1"/>
+        <line x1="40" y1="160" x2="800" y2="160" stroke="#3A3A6A" stroke-width="1"/>
+        <text x="34" y="23.7" font-size="9" fill="#C0C0D8" font-family="DM Mono,monospace" text-anchor="end">$120</text>
+        <text x="34" y="45.1" font-size="9" fill="#C0C0D8" font-family="DM Mono,monospace" text-anchor="end">$110</text>
+        <text x="34" y="66.6" font-size="9" fill="#C0C0D8" font-family="DM Mono,monospace" text-anchor="end">$100</text>
+        <text x="34" y="88.0" font-size="9" fill="#C0C0D8" font-family="DM Mono,monospace" text-anchor="end">$90</text>
+        <text x="34" y="109.4" font-size="9" fill="#C0C0D8" font-family="DM Mono,monospace" text-anchor="end">$80</text>
+        <text x="34" y="130.9" font-size="9" fill="#C0C0D8" font-family="DM Mono,monospace" text-anchor="end">$70</text>
+        <text x="34" y="152.3" font-size="9" fill="#C0C0D8" font-family="DM Mono,monospace" text-anchor="end">$60</text>
+        <text x="40.0" y="174" font-size="8.5" fill="#B0B0C8" font-family="DM Mono,monospace" text-anchor="middle">04 Jan</text>
+        <text x="174.5" y="174" font-size="8.5" fill="#B0B0C8" font-family="DM Mono,monospace" text-anchor="middle">18 Jan</text>
+        <text x="309.1" y="174" font-size="8.5" fill="#B0B0C8" font-family="DM Mono,monospace" text-anchor="middle">01 Feb</text>
+        <text x="443.6" y="174" font-size="8.5" fill="#B0B0C8" font-family="DM Mono,monospace" text-anchor="middle">15 Feb</text>
+        <text x="578.2" y="174" font-size="8.5" fill="#B0B0C8" font-family="DM Mono,monospace" text-anchor="middle">01 Mar</text>
+        <text x="712.7" y="174" font-size="8.5" fill="#B0B0C8" font-family="DM Mono,monospace" text-anchor="middle">15 Mar</text>
+        <text x="780.0" y="174" font-size="8.5" fill="#FAFAFC" font-family="DM Mono,monospace" text-anchor="middle" font-weight="600">Today</text>
+        <line x1="530.1" y1="8" x2="530.1" y2="160" stroke="#843FDC" stroke-width="1" stroke-dasharray="3,3" opacity=".9"/>
+        <text x="533" y="17" font-size="8.5" fill="#CF9EED" font-family="DM Mono,monospace" font-weight="500">28 Feb</text>
+        <text x="533" y="28" font-size="8" fill="#CF9EED" font-family="DM Mono,monospace">Op. Epic Fury</text>
+        <polygon points="40.0,151.2 107.3,150.5 174.5,147.0 241.8,138.1 309.1,141.7 376.4,143.1 443.6,135.4 510.9,134.5 578.2,90.3 645.5,70.3 712.7,72.7 780.0,73.9 780.0,160 40.0,160" fill="url(#wG2)"/>
+        <polyline points="40.0,151.2 107.3,150.5 174.5,147.0 241.8,138.1 309.1,141.7 376.4,143.1 443.6,135.4 510.9,134.5 578.2,90.3 645.5,70.3 712.7,72.7 780.0,73.9" fill="none" stroke="#6040A0" stroke-width="1.8"/>
+        <circle cx="40.0" cy="151.2" r="2.5" fill="#6040A0"/><circle cx="107.3" cy="150.5" r="2.5" fill="#6040A0"/><circle cx="174.5" cy="147.0" r="2.5" fill="#6040A0"/><circle cx="241.8" cy="138.1" r="2.5" fill="#6040A0"/><circle cx="309.1" cy="141.7" r="2.5" fill="#6040A0"/><circle cx="376.4" cy="143.1" r="2.5" fill="#6040A0"/><circle cx="443.6" cy="135.4" r="2.5" fill="#6040A0"/><circle cx="510.9" cy="134.5" r="2.5" fill="#6040A0"/><circle cx="578.2" cy="90.3" r="2.5" fill="#6040A0"/><circle cx="645.5" cy="70.3" r="2.5" fill="#6040A0"/><circle cx="712.7" cy="72.7" r="2.5" fill="#6040A0"/><circle cx="780.0" cy="73.9" r="3.5" fill="#6040A0" stroke="#1C1B4A" stroke-width="1.5"/>
+        <polygon points="40.0,142.1 107.3,140.4 174.5,136.7 241.8,129.3 309.1,132.0 376.4,132.7 443.6,124.1 510.9,122.5 578.2,79.2 645.5,56.8 712.7,56.8 780.0,57.1 780.0,160 40.0,160" fill="url(#bG2)"/>
+        <polyline points="40.0,142.1 107.3,140.4 174.5,136.7 241.8,129.3 309.1,132.0 376.4,132.7 443.6,124.1 510.9,122.5 578.2,79.2 645.5,56.8 712.7,56.8 780.0,57.1" fill="none" stroke="#A060F0" stroke-width="2"/>
+        <circle cx="40.0" cy="142.1" r="2.5" fill="#A060F0"/><circle cx="107.3" cy="140.4" r="2.5" fill="#A060F0"/><circle cx="174.5" cy="136.7" r="2.5" fill="#A060F0"/><circle cx="241.8" cy="129.3" r="2.5" fill="#A060F0"/><circle cx="309.1" cy="132.0" r="2.5" fill="#A060F0"/><circle cx="376.4" cy="132.7" r="2.5" fill="#A060F0"/><circle cx="443.6" cy="124.1" r="2.5" fill="#A060F0"/><circle cx="510.9" cy="122.5" r="2.5" fill="#A060F0"/><circle cx="578.2" cy="79.2" r="2.5" fill="#A060F0"/><circle cx="645.5" cy="56.8" r="2.5" fill="#A060F0"/><circle cx="712.7" cy="56.8" r="2.5" fill="#A060F0"/><circle cx="780.0" cy="57.1" r="3.5" fill="#A060F0" stroke="#1C1B4A" stroke-width="1.5"/>
+        <text x="786" y="60.1" font-size="9" fill="#CF9EED" font-family="DM Mono,monospace" font-weight="600">$103.00</text>
+        <text x="786" y="77.9" font-size="9" fill="#9070C0" font-family="DM Mono,monospace" font-weight="500">$95.20</text>
+        <rect x="40" y="184" width="12" height="2.5" fill="#A060F0" rx="1"/><circle cx="53" cy="185.5" r="3" fill="#A060F0"/><text x="60" y="189" font-size="9" fill="#D0D0E8" font-family="DM Sans,sans-serif">Brent Crude</text>
+        <rect x="148" y="184" width="12" height="2.5" fill="#6040A0" rx="1"/><circle cx="161" cy="185.5" r="3" fill="#6040A0"/><text x="168" y="189" font-size="9" fill="#D0D0E8" font-family="DM Sans,sans-serif">WTI Crude</text>
+        <line x1="256" y1="185.5" x2="270" y2="185.5" stroke="#CF9EED" stroke-width="1" stroke-dasharray="3,2"/><text x="274" y="189" font-size="9" fill="#D0D0E8" font-family="DM Sans,sans-serif">28 Feb — Operation Epic Fury</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><div class="stit">Natural Gas &amp; Downstream</div></div>
+    <div class="g c3">
+      <div class="card"><div class="clbl">Henry Hub (US) <span class="cbdg be">EIA</span></div><div class="cval">$3.13</div><div class="cchg neg">−3.0% · April futures</div><div class="csub">US largely insulated from Hormuz disruption. Ample domestic supply; storage 141 bcf above year-ago. EIA 2026 forecast: $3.76/MMBtu avg.</div></div>
+      <div class="card"><div class="clbl">LNG Asia JKM <span class="cbdg be">Apr</span></div><div class="cval">$19.50</div><div class="cchg neg">−$3.00 week-on-week</div><div class="csub">Down from $22.50 prior week. JERA CEO: Hormuz resolution "far too optimistic" on weeks timeline. Asian buyers seeking prompt cargoes.</div></div>
+      <div class="card"><div class="clbl">US Gasoline Retail <span class="cbdg bw">AAA</span></div><div class="cval">$3.67</div><div class="cchg neg">+$0.69 in 14 days (+23%)</div><div class="csub">National avg regular unleaded. Three successive weekly surges from $2.98. Below-$3 era of 13 consecutive weeks ended abruptly Feb 28. California &gt;$4.50.</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><div class="stit">Supply Disruption Scorecard</div><div class="snote">Sources: Congress.gov CRS, Wikipedia 2026 Hormuz Crisis, NBC/CBS/CNN</div></div>
+    <table class="dt">
+      <thead><tr><th style="width:180px">Route / Factor</th><th>Pre-War Capacity</th><th>Current Status</th><th>Impact</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="p">Strait of Hormuz</td><td class="mn">~21M bbl/day · 27% world maritime trade</td><td>Near zero — 21 vessel incidents since Feb 28</td><td class="neg2">−$20–25/bbl premium</td><td><span class="pill pr"><span class="d"></span>Closed</span></td></tr>
+        <tr><td class="p">Gulf Oil Exports</td><td class="mn">~40M bbl/day</td><td>Down ~60% (NBC/MSNBC, 16 Mar)</td><td class="neg2">Critical disruption</td><td><span class="pill pr"><span class="d"></span>Severely disrupted</span></td></tr>
+        <tr><td class="p">Fujairah Port (UAE)</td><td class="mn">70M bbl storage hub</td><td>Loadings suspended — drone fires 16–17 Mar</td><td class="neg2">Bypass compromised</td><td><span class="pill pr"><span class="d"></span>Suspended</span></td></tr>
+        <tr><td class="p">Saudi East–West Pipeline</td><td class="mn">5M bbl/day to Yanbu</td><td>Diverting to Red Sea port (Yanbu)</td><td class="warn">Partial offset</td><td><span class="pill pa"><span class="d"></span>Partial</span></td></tr>
+        <tr><td class="p">Oman Bypass Ports</td><td class="mn">Duqm, Salalah, Sohar</td><td>Drone strikes on Duqm &amp; Salalah in Mar</td><td class="neg2">Limited</td><td><span class="pill pa"><span class="d"></span>Damaged</span></td></tr>
+        <tr><td class="p">Cape of Good Hope</td><td class="mn">Unlimited — no chokepoint</td><td>Active alternative; +15 days transit</td><td class="warn">Cost + time increase</td><td><span class="pill pg"><span class="d"></span>Open</span></td></tr>
+        <tr><td class="p">IEA Strategic Reserve</td><td class="mn">—</td><td>400M bbl release unanimously agreed</td><td class="warn">Failed to suppress prices</td><td><span class="pill pa"><span class="d"></span>Released</span></td></tr>
+        <tr><td class="p">US SPR</td><td class="mn">~350M bbl available</td><td>172M bbl release announced</td><td class="warn">Partial demand signal</td><td><span class="pill pa"><span class="d"></span>In progress</span></td></tr>
+        <tr><td class="p">Qatar LNG via Hormuz</td><td class="mn">~80M tonnes/year</td><td>Severely disrupted</td><td class="neg2">European TTF elevated</td><td><span class="pill pr"><span class="d"></span>Disrupted</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="pnl" id="pnl-macro">
+  <div class="sec">
+    <div class="sh"><div class="stit">The Fed's Dilemma — FOMC Decision Wednesday 18 March</div><div class="snote">Sources: TradingEconomics, CNBC, Federal Reserve</div></div>
+    <div class="g c3">
+      <div class="card" style="grid-column:span 2">
+        <div class="clbl">Fed Policy Environment</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:14px">
+          <div><div style="font-family:var(--fm);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">Fed Funds Rate</div><div style="font-family:var(--fs);font-size:20px;font-weight:700;color:var(--t1)">4.25–4.5%</div><div style="font-family:var(--fm);font-size:8.5px;color:var(--t2)">Hold expected Wed</div></div>
+          <div><div style="font-family:var(--fm);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">Cuts Priced 2026</div><div style="font-family:var(--fs);font-size:20px;font-weight:700;color:var(--t1)">1×</div><div style="font-family:var(--fm);font-size:8.5px;color:var(--t2)">December only</div></div>
+          <div><div style="font-family:var(--fm);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:3px">US 10Y Yield</div><div style="font-family:var(--fs);font-size:20px;font-weight:700;color:var(--t1)">4.23%</div><div style="font-family:var(--fm);font-size:8.5px;color:var(--neg)">+13bps last week</div></div>
+        </div>
+        <div class="csub">The Federal Reserve faces its most complex communication challenge since 2022. An energy shock simultaneously drives inflation higher and growth lower — a classic stagflation dynamic. Markets have repriced from three cuts to one since conflict began. Wednesday's statement will be scrutinised for whether the Fed's reaction function has shifted toward tolerating higher inflation, or whether the growth slowdown risk now dominates.</div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px"><div class="clbl">5Y Breakeven Inflation</div><div class="cval">2.58%</div><div class="cchg neg">Source: FRED T5YIE · 17 Mar</div><div class="csub">Gasoline already +23% in 14 days. Potential for second-round wage effects if sustained.</div></div>
+        <div class="card">
+          <div class="clbl">Stagflation Risk</div>
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:7px">
+            <svg viewBox="0 0 60 60" width="56" height="56"><circle cx="30" cy="30" r="26" fill="none" stroke="#2A2A50" stroke-width="6"/><circle cx="30" cy="30" r="26" fill="none" stroke="#793690" stroke-width="6" stroke-dasharray="90 73" stroke-dashoffset="25" stroke-linecap="round"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="#FAFAFC">55%</text></svg>
+            <div><div style="font-size:10.5px;font-weight:600;color:var(--t1);margin-bottom:2px">Stagflation scenario</div><div style="font-size:9.5px;color:var(--t2)">Market-implied probability over 6-month horizon</div></div>
+          </div>
+          <div class="csub">Energy shock raises CPI while Hormuz disruption lowers output. Fed cannot cut without risking inflation spiral.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Safe Havens &amp; FX</div></div>
+    <div class="g c4">
+      <div class="card"><div class="clbl">Gold Spot <span class="cbdg bs">XAU/USD</span></div><div class="cval">$5,016</div><div class="cchg neg">Near ATH · −0.4% today</div><svg viewBox="0 0 160 30" width="100%" height="26" style="margin:5px 0"><polyline points="0,26 20,24 40,20 60,14 80,10 100,8 120,12 140,16 160,14" fill="none" stroke="#FFB443" stroke-width="1.5"/></svg><div class="csub">ATH $5,595 on 29 Jan. PBoC buying 15 consecutive months. Consolidating near $5,000 support ahead of Fed. War premium structurally embedded.</div></div>
+      <div class="card"><div class="clbl">Silver <span class="cbdg bs">XAG/USD</span></div><div class="cval">$80.72</div><div class="cchg neg">USD / troy oz</div><div class="csub">Retreating from last week's highs. More volatile than gold — industrial use component introduces growth sensitivity.</div></div>
+      <div class="card"><div class="clbl">DXY Dollar Index <span class="cbdg bm">Safe Haven</span></div><div class="cval">99.78</div><div class="cchg neg">−0.56% today · 10-month high</div><svg viewBox="0 0 160 30" width="100%" height="26" style="margin:5px 0"><polyline points="0,20 20,22 40,18 60,14 80,8 100,6 120,10 140,14 160,14" fill="none" stroke="#793690" stroke-width="1.5"/></svg><div class="csub">Eased slightly as Bessent confirmed Iranian oil transit allowed. Markets pricing only 1 Fed cut supports USD. Safe-haven bid intact.</div></div>
+      <div class="card"><div class="clbl">EUR/USD <span class="cbdg bm">FX</span></div><div class="cval">1.1515</div><div class="cchg neg">USD bid on inflation fears</div><div class="csub">USD strength from higher-for-longer Fed expectations. EUR exposed to European LNG supply disruption via Hormuz / Qatar. ECB on divergent path.</div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Macro Transmission Matrix</div></div>
+    <table class="dt">
+      <thead><tr><th>Channel</th><th>Mechanism</th><th>Current Reading</th><th>Direction</th><th>Key Risk</th></tr></thead>
+      <tbody>
+        <tr><td class="p">Energy → CPI</td><td>Oil/gas spike → fuel, transport, goods costs</td><td>Gasoline +23% in 14 days</td><td class="neg2">↑ Sharply higher</td><td>Second-round wage effects</td></tr>
+        <tr><td class="p">CPI → Fed Policy</td><td>Inflation overshoot delays rate cuts</td><td>1 cut priced (Dec 2026)</td><td class="neg2">↓ Hawkish shift</td><td>Stagflation trap</td></tr>
+        <tr><td class="p">Risk-off → Gold/USD</td><td>Conflict premium, safe haven flows</td><td>Gold $5,016 · DXY 99.78</td><td class="neg2">↑ Both elevated</td><td>USD reverses on growth fears</td></tr>
+        <tr><td class="p">Energy → Consumer</td><td>Fuel costs reduce disposable income</td><td>$3.67/gal national avg</td><td class="neg2">↓ Negative growth signal</td><td>Consumer confidence collapse</td></tr>
+        <tr><td class="p">LNG → Europe</td><td>Qatar LNG via Hormuz disrupted</td><td>JKM $19.50 · TTF elevated</td><td class="neg2">↑ European inflation</td><td>Winter 2026/27 supply risk</td></tr>
+        <tr><td class="p">War → Fiscal</td><td>Military spending, SPR cost, ally support</td><td>10Y yield 4.23%</td><td class="neg2">↑ Debt concern</td><td>Deficit sustainability</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="pnl" id="pnl-equities">
+  <div class="sec" style="background:#1A1200;border-bottom:1px solid #3A2800">
+    <div style="font-size:10.5px;color:var(--amber)"><strong style="color:var(--amber)">Note:</strong> Equity prices indicative as of market close 16 March 2026. Elevated intraday volatility. All YTD figures approximate. Sources: Yahoo Finance, Investing.com.</div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Energy ETFs</div></div>
+    <div class="g c4">
+      <div class="card"><div class="clbl">USO <span class="cbdg be">Oil Fund</span></div><div class="cval">$115.03</div><div class="cchg neg">+64.94% YTD</div><div class="csub">US Oil Fund LP. WTI-linked. Strong inflows since conflict began Feb 28. Most direct retail oil exposure.</div></div>
+      <div class="card"><div class="clbl">BNO <span class="cbdg be">Brent ETF</span></div><div class="cval">$47.66</div><div class="cchg neg">+67.11% YTD</div><div class="csub">Brent-linked. Outperforming USO on wider spread. More exposed to Hormuz-specific supply shock.</div></div>
+      <div class="card"><div class="clbl">XLE <span class="cbdg be">Energy Sector</span></div><div class="cval">$57.90</div><div class="cchg neg">+29.50% YTD</div><div class="csub">SPDR Energy Select Sector. Exxon, Chevron, ConocoPhillips leading. War risk caps multiples despite earnings surge.</div></div>
+      <div class="card"><div class="clbl">XOP <span class="cbdg be">E&amp;P</span></div><div class="cval">$167.37</div><div class="cchg neg">+31.34% YTD</div><div class="csub">S&amp;P Oil &amp; Gas E&amp;P ETF. US shale drilling rising rapidly. Extra $63.4B industry cashflow if WTI averages $100.</div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Defence &amp; Aerospace</div></div>
+    <table class="dt">
+      <thead><tr><th>Ticker</th><th>Company</th><th>Approx Price</th><th>YTD Change</th><th>Conflict Driver</th></tr></thead>
+      <tbody>
+        <tr><td class="p">LMT</td><td>Lockheed Martin</td><td class="mn">$645.20</td><td class="pos">+33.40% YTD</td><td>F-35s, THAAD missile defence in active use across theatre</td></tr>
+        <tr><td class="p">RTX</td><td>RTX Corporation (Raytheon)</td><td class="mn">$206.06</td><td class="pos">+12.36% YTD</td><td>Patriot interceptors deployed; high demand for air defence systems</td></tr>
+        <tr><td class="p">NOC</td><td>Northrop Grumman</td><td class="mn">$735.96</td><td class="pos">+29.07% YTD</td><td>B-2/B-21 stealth bombers deployed; radar and surveillance</td></tr>
+        <tr><td class="p">GD</td><td>General Dynamics</td><td class="mn">$354.36</td><td class="pos">+5.26% YTD</td><td>Munitions, Abrams support, naval vessels</td></tr>
+        <tr><td class="p">DFEN</td><td>Direxion 3× Aerospace &amp; Defense</td><td class="mn">$77.47</td><td class="pos">+18.15% YTD</td><td>Leveraged exposure to sector — elevated volatility</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Tanker &amp; Shipping — War Risk Context</div></div>
+    <div class="g c3">
+      <div class="card"><div class="clbl">FRO — Frontline PLC <span class="cbdg bw">VLCC</span></div><div class="cval">Volatile</div><div class="csub">War risk insurance: 0.125% → 0.4% per transit (+220%). Some routes uninsurable. Rerouting via Cape of Good Hope adds cost but increases day rates.</div></div>
+      <div class="card"><div class="clbl">STNG — Scorpio Tankers <span class="cbdg be">Product</span></div><div class="cval">Volatile</div><div class="csub">Product tankers benefit partially from rerouting — longer voyages around Africa increase tonne-miles and day rates. Offset by higher insurance and fuel costs.</div></div>
+      <div class="card"><div class="clbl">War Risk Insurance <span class="cbdg bw">Lloyd's</span></div><div class="cval">+220%</div><div class="cchg neg">Premium surge · Hormuz routes</div><div class="csub">P&amp;I clubs withdrew Hormuz coverage 5 March. Premium: 0.125% → 0.4% of hull value per transit. VLCC = extra ~$250,000 per voyage.</div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Broader Market Context</div></div>
+    <div class="g c4">
+      <div class="card"><div class="clbl">S&amp;P 500</div><div class="cval">6,699.38</div><div class="cchg pos">+1.01% today</div><div class="csub">Recovering from conflict lows. Energy sector lifting index. Tech volatile on inflation/yield headwinds.</div></div>
+      <div class="card"><div class="clbl">VIX</div><div class="cval">23.43</div><div class="cchg pos">−13.5% today</div><div class="csub">Peaked above 30 during peak Hormuz closure fears. Now easing as limited tanker escorts resume. Still elevated vs pre-war ~16.</div></div>
+      <div class="card"><div class="clbl">Airlines &amp; Aviation</div><div class="cval" style="font-size:18px">Under pressure</div><div class="cchg neg">Fuel + route disruption</div><div class="csub">Dubai Int'l suspended flights after drone attack 16 Mar. Iranian airspace closed. Rerouting adds hours and fuel cost significantly.</div></div>
+      <div class="card"><div class="clbl">USD/JPY</div><div class="cval">158.99</div><div class="cchg neg">−0.46% today</div><div class="csub">JPY safe-haven demand partially offsetting dollar strength. Japan imports ~90% of oil from Middle East.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="pnl" id="pnl-conflict">
+  <div class="sec">
+    <div class="sh"><div class="stit">Conflict Escalation Timeline</div><div class="snote">Sources: Wikipedia 2026 Iran War, Congress.gov CRS R45281, NBC/CBS/CNN</div></div>
+    <div class="g c21">
+      <div>
+        <div class="tl-row cr"><div class="tld">28 Feb 2026<br>Day 1</div><div class="tlc"><strong>Operation Epic Fury — War Begins</strong>US &amp; Israel launch coordinated airstrikes on Iran. Supreme Leader Khamenei killed. IRGC HQ, nuclear sites, missile batteries, naval vessels destroyed. Oil markets spike $10–15/bbl in Asian session.</div></div>
+        <div class="tl-row cr"><div class="tld">28 Feb<br>Hours later</div><div class="tlc"><strong>Iranian Retaliation Begins</strong>Missile &amp; drone strikes on Israel, US bases, UAE, Qatar, Kuwait, Bahrain, Saudi Arabia. 150+ oil tankers stall outside Hormuz. Shipping insurance premiums begin spiking.</div></div>
+        <div class="tl-row hi"><div class="tld">1–2 Mar<br>Days 2–3</div><div class="tlc"><strong>Hormuz Effectively Closed</strong>US-flagged Stena Imperative struck at Bahrain. IRGC threatens to "set fire to any ship." Tanker AIS signals go dark. 17 Iranian vessels sunk by CENTCOM. 16 minelayers eliminated. Brent hits $95.</div></div>
+        <div class="tl-row hi"><div class="tld">3–5 Mar<br>Days 4–6</div><div class="tlc"><strong>Strait Formally Declared Closed</strong>Iran confirms closure to US/Israeli/Western ships. P&amp;I clubs withdraw Hormuz coverage. War-risk premium surges to 0.4% per transit.</div></div>
+        <div class="tl-row hi"><div class="tld">9 Mar<br>Day 10</div><div class="tlc"><strong>Oil Breaches $100 — IEA Emergency Release</strong>Brent briefly above $120. New supreme leader Mojtaba Khamenei vows to keep Hormuz closed. IEA 400M bbl release fails to suppress prices.</div></div>
+        <div class="tl-row hi"><div class="tld">10–11 Mar<br>Days 11–12</div><div class="tlc"><strong>US Strikes Kharg Island — Escalation Peak</strong>Iran's main oil export hub targeted. Hegseth: "Most intense day of strikes." Dubai airport hit by drones. US SPR 172M bbl release announced.</div></div>
+        <div class="tl-row md"><div class="tld">13 Mar<br>Day 14</div><div class="tlc"><strong>First Diplomatic Signals</strong>Trump says war "pretty much complete." First Turkish ship transits Hormuz. Indian LNG carriers and Saudi tanker allowed through. Brent settles $94.</div></div>
+        <div class="tl-row hi"><div class="tld">14–16 Mar<br>Days 15–17</div><div class="tlc"><strong>Fujairah Bypass Route Hit</strong>Drone fires at Fujairah Oil Industry Zone. ADNOC loadings suspended. Oman bypass ports struck. Gulf oil exports down 60%. EU ministers reject Hormuz military role.</div></div>
+        <div class="tl-row td"><div class="tld">17 Mar 2026<br>TODAY</div><div class="tlc"><strong>First Non-Iranian Cargo Transits Hormuz (AIS)</strong>Karachi tanker (Das crude) transits broadcasting AIS. Trump: war "won't be long." Bessent confirms US allowing Iranian oil transit. Brent $103, WTI $95.20. Fed decision tomorrow. 21 total vessel incidents.</div></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="clbl">Strait of Hormuz Status</div>
+          <div class="wi"><div><div class="ws">Transit</div></div><span class="pill pr"><span class="d"></span>Near Zero</span></div>
+          <div class="wi"><div><div class="ws">Hormuz open by Apr</div><div class="wn">Polymarket prediction market</div></div><span class="pill pa"><span class="d"></span>28% probability</span></div>
+          <div class="wi"><div><div class="ws">Vessel Incidents</div></div><span class="pill pr"><span class="d"></span>21 total</span></div>
+          <div class="wi"><div><div class="ws">AIS Signal</div></div><span class="pill pa"><span class="d"></span>1 cargo today</span></div>
+          <div class="wi"><div><div class="ws">Iranian Navy</div></div><span class="pill pg"><span class="d"></span>Largely destroyed</span></div>
+          <div class="wi"><div><div class="ws">Minelayers</div></div><span class="pill pg"><span class="d"></span>16 eliminated</span></div>
+        </div>
+        <div class="card" style="margin-bottom:12px">
+          <div class="clbl">Alternative Routes</div>
+          <div class="wi"><div><div class="ws">Fujairah (UAE)</div></div><span class="pill pr"><span class="d"></span>Suspended</span></div>
+          <div class="wi"><div><div class="ws">Saudi Yanbu</div></div><span class="pill pa"><span class="d"></span>Partial</span></div>
+          <div class="wi"><div><div class="ws">Oman Duqm/Salalah</div></div><span class="pill pr"><span class="d"></span>Drone strikes</span></div>
+          <div class="wi"><div><div class="ws">Cape of Good Hope</div></div><span class="pill pg"><span class="d"></span>Open</span></div>
+          <div class="wi"><div><div class="ws">Red Sea (Houthis)</div></div><span class="pill pa"><span class="d"></span>Elevated risk</span></div>
+        </div>
+        <div class="card">
+          <div class="clbl">Key Actors Today</div>
+          <div class="wi"><div><div class="ws">Iran Supreme Leader</div></div><span class="pill pa"><span class="d"></span>New: Mojtaba</span></div>
+          <div class="wi"><div><div class="ws">US–Iran Talks</div></div><span class="pill pa"><span class="d"></span>Contested signals</span></div>
+          <div class="wi"><div><div class="ws">NATO Hormuz role</div></div><span class="pill pr"><span class="d"></span>Rejected</span></div>
+          <div class="wi"><div><div class="ws">EU Naval Expansion</div></div><span class="pill pr"><span class="d"></span>Rejected</span></div>
+          <div class="wi"><div><div class="ws">Russia–US Energy</div></div><span class="pill pgy"><span class="d"></span>Early talks</span></div>
+          <div class="wi"><div><div class="ws">China (Trump asked)</div></div><span class="pill pgy"><span class="d"></span>No commitment</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pnl" id="pnl-polymarket">
+  <div class="sec">
+    <div class="sh">
+      <div class="stit">Polymarket — Prediction Market Odds</div>
+      <div class="snote">Source: Polymarket.com · 17 Mar 2026 · Total volume across markets shown</div>
+    </div>
+
+    <!-- Ceasefire / Conflict End -->
+    <div style="font-family:var(--fm);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--vlt50);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--brd)">Ceasefire &amp; Conflict Resolution</div>
+    <div class="g c3" style="margin-bottom:24px">
+
+      <!-- US x Iran Ceasefire -->
+      <div class="card">
+        <div class="clbl">US x Iran Ceasefire <span class="cbdg bm">$19.7M Vol</span></div>
+        <div style="font-size:10.5px;color:var(--t2);margin-bottom:12px;line-height:1.4">Probability ceasefire is reached by each date</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">March 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:11%;height:100%;background:#C0392B"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:#ff6b5b;min-width:32px;text-align:right">11%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">April 15</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:30%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">30%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">April 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:41%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">41%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">May 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:50%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">50%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">June 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:57%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">57%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">December 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:71%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">71%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Iran x Israel/US conflict ends -->
+      <div class="card">
+        <div class="clbl">Iran x Israel/US Conflict Ends <span class="cbdg bm">$6M Vol</span></div>
+        <div style="font-size:10.5px;color:var(--t2);margin-bottom:12px;line-height:1.4">Probability conflict formally ends by each date</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">June 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:71%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">71%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">December 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:85%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">85%</span>
+            </div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <!-- Trump end of military ops -->
+        <div class="clbl" style="margin-top:4px">Trump Announces End of Military Ops <span class="cbdg bm">$3M Vol</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">April 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:56%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">56%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">June 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:73%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">73%</span>
+            </div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <!-- US forces enter Iran -->
+        <div class="clbl" style="margin-top:4px">US Forces Enter Iran <span class="cbdg bm">$15.3M Vol</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">March 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:24%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">24%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">December 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:61%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">61%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crude Oil price targets -->
+      <div class="card">
+        <div class="clbl">Crude Oil (CL) Hits Target by Mar 31 <span class="cbdg be">$36.6M Vol</span></div>
+        <div style="font-size:10.5px;color:var(--t2);margin-bottom:12px;line-height:1.4">Market-implied probability Brent/WTI reaches each level by month-end</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">↑ $120</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:24%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">24%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">↑ $110</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:37%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">37%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">↑ $105</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:59%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">59%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">↑ $100</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:76%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">76%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">↓ $80</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:21%;height:100%;background:#C0392B;opacity:.8"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:#ff6b5b;min-width:32px;text-align:right">21%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">↓ $70</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:8%;height:100%;background:#C0392B;opacity:.8"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:#ff6b5b;min-width:32px;text-align:right">8%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regime & Political -->
+    <div style="font-family:var(--fm);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--vlt50);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--brd)">Iranian Regime &amp; Political Outcomes</div>
+    <div class="g c3" style="margin-bottom:24px">
+
+      <div class="card">
+        <div class="clbl">Iranian Regime Falls <span class="cbdg bw">Monthly</span></div>
+        <div style="font-size:10.5px;color:var(--t2);margin-bottom:12px">Probability of regime change by each date</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">By March 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:5%;height:100%;background:#C0392B"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:#ff6b5b;min-width:32px;text-align:right">5%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">By April 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:17%;height:100%;background:#C0392B"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:#ff6b5b;min-width:32px;text-align:right">17%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">By June 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:31%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">31%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">Before 2027</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:45%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">45%</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--t3);margin-top:10px;padding-top:8px;border-top:1px solid var(--brd2)">Market vol: $37M (March) · $7M (April) · $18M (June) · $11M (pre-2027)</div>
+      </div>
+
+      <div class="card">
+        <div class="clbl">Iran Leadership by End of 2026 <span class="cbdg bm">$3M Vol</span></div>
+        <div style="font-size:10.5px;color:var(--t2);margin-bottom:12px">Who leads Iran at end of 2026?</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t2)">Mojtaba Khamenei</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:37%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">37%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t2)">Reza Pahlavi</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:15%;height:100%;background:#C0392B"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:#ff6b5b;min-width:32px;text-align:right">15%</span>
+            </div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <div class="clbl" style="margin-top:4px">Iran Leadership Change <span class="cbdg bm">$9M Vol</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">By April 30</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:36%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">36%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t3)">By December 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:62%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">62%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="clbl">Strait of Hormuz &amp; Shipping <span class="cbdg be">$494K Vol</span></div>
+        <div style="font-size:10.5px;color:var(--t2);margin-bottom:12px">Traffic restoration and transit volumes</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t2)">Traffic normal by end of April</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:26%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">26%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t2)">Ships transiting (Mar 10–16): 35–39</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:73%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">73%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t2)">Ships transiting (Mar 10–16): 40–44</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:22%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">22%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t2)">Avg ships end of March: 0–10</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:65%;height:100%;background:var(--pos)"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--pos);min-width:32px;text-align:right">65%</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0A0A20;border:1px solid var(--brd2)">
+            <span style="font-family:var(--fm);font-size:9px;color:var(--t2)">US escorts commercial ship by Mar 31</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:80px;height:4px;background:var(--brd2);border-radius:2px;overflow:hidden"><div style="width:22%;height:100%;background:#FFB443"></div></div>
+              <span style="font-family:var(--fm);font-size:11px;font-weight:600;color:var(--amber);min-width:32px;text-align:right">22%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div style="background:#110E2A;border:1px solid var(--brd);padding:12px 16px;display:flex;align-items:flex-start;gap:10px">
+      <div style="font-family:var(--fm);font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--vlt50);margin-top:2px;flex-shrink:0">Note</div>
+      <div style="font-size:10.5px;color:var(--t3);line-height:1.6">Polymarket odds represent crowd-sourced prediction market probabilities, not Marex Solutions forecasts. All figures as of 17 March 2026. Volumes in USD. Markets are subject to rapid change given conflict developments. For reference only — not investment advice.</div>
+    </div>
+  </div>
+</div>
+
+<div class="pnl" id="pnl-strategy">
+  <div class="sec">
+    <div class="comm">
+      <div class="cmt">Marex Solutions — Strategist Commentary</div>
+      <div class="cmb">17 March 2026 · Day 17 of Iran Conflict · For internal and client distribution</div>
+      <div class="cmx">
+        <p>Seventeen days into Operation Epic Fury, energy markets remain severely dislocated. Brent crude at $103/bbl and WTI at $95.20 reflect a $20–25/bbl war premium above pre-conflict fundamentals, with the Strait of Hormuz effectively closed — 21 vessel incidents since 28 February and Gulf oil exports estimated down 60%. Today's first non-Iranian cargo transit with AIS broadcast (the Aframax tanker <em>Karachi</em>) is an encouraging signal, but it remains isolated: Fujairah continues to sustain drone attacks with loadings suspended, and the IRGC's declared closure policy has not been formally rescinded.</p>
+        <p>The macro implications are increasingly complex. US gasoline at $3.67/gal — up 23% in 14 days — is now the most visible inflation transmission mechanism, and markets have repriced to just one Fed cut in 2026 (December). The 10Y Treasury at 4.23% and DXY near 10-month highs reflect a market grappling with a classic stagflation dynamic: an energy shock simultaneously raising inflation and threatening growth. Gold at $5,016 continues to signal institutional and central bank demand for inflation protection. Wednesday's FOMC decision will be closely watched — the Fed cannot cut without risking an inflation spiral, but it cannot tighten into a slowing economy either.</p>
+        <p>For structured products, three themes stand out: <strong>(1) Capital protection with energy participation</strong> — the binary outcome risk argues for structures that participate in further Brent upside while protecting principal in a ceasefire snap-back; <strong>(2) Gold volatility structures</strong> — elevated implied vol in XAU/USD near $5,000 makes autocallable ELN structures attractive for yield-seeking clients; <strong>(3) USD inflation-linked notes</strong> — notes linked to US CPI with defined payoffs provide a clean inflation hedge that doesn't require a directional oil view.</p>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Scenario Analysis</div><div class="snote">Marex Solutions internal estimates</div></div>
+    <div class="sc-grid">
+      <div class="sc sc-bear"><div class="sclbl">Bear Scenario (30% probability)</div><div class="sct">Prolonged Closure — 3+ Months</div><div class="scp">Brent $130–150</div><div class="scx">Hormuz remains closed through H2 2026. Fujairah and bypass routes under sustained attack. Gulf exports down 50%+. US CPI reaches 5–6%. Fed forced to choose between inflation spiral and recession. Gold $6,000+. VIX re-accelerates above 35.</div></div>
+      <div class="sc sc-base"><div class="sclbl">Base Scenario (45% probability)</div><div class="sct">Negotiated Resolution — 4–6 Weeks</div><div class="scp">Brent $80–95</div><div class="scx">Diplomatic talks (potentially brokered by Oman or Turkey) produce a partial ceasefire. Hormuz reopens by April. Oil premium partially reverses. CPI elevated but controllable. Fed cuts twice in late 2026. Gold $4,500–5,000. VIX normalises 18–22.</div></div>
+      <div class="sc sc-bull"><div class="sclbl">Bull Scenario (25% probability)</div><div class="sct">Rapid Ceasefire — Within 2 Weeks</div><div class="scp">Brent $70–80</div><div class="scx">Iran's new leadership accepts terms. Full Hormuz reopening within 2 weeks. Sharp Brent correction to $70–80. Fed cuts 2–3 times in H2 2026. Gold corrects to $4,200. S&amp;P 500 rallies 8–12%. Downside protection on energy essential.</div></div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Marex Solutions — Structured Product Ideas</div><div class="snote">For discussion purposes only · Not investment advice</div></div>
+    <table class="dt">
+      <thead><tr><th>Product Type</th><th>Underlying</th><th>Rationale</th><th>Key Terms (Indicative)</th><th>Scenario Fit</th></tr></thead>
+      <tbody>
+        <tr><td class="p">Capital Protected Note</td><td>Brent Crude / WTI</td><td>Binary outcome risk — participate in continued upside while protecting in ceasefire snap-back.</td><td class="dm">100% capital protection · 12-month · 70% participation in Brent upside above $103</td><td class="warn">All scenarios</td></tr>
+        <tr><td class="p">Autocallable ELN — Gold</td><td>XAU/USD</td><td>Elevated implied vol near $5,000 support makes autocallable structures attractive. Enhanced yield without outright long.</td><td class="dm">15–18% p.a. coupon · 6-month · autocall at 105% · 80% strike protection</td><td class="warn">Base / Bull</td></tr>
+        <tr><td class="p">Defence Sector Basket Note</td><td>LMT / RTX / NOC basket</td><td>Direct exposure to conflict duration premium. Defence stocks benefit regardless of oil direction as long as conflict continues.</td><td class="dm">100% participation · 18-month · capital at risk below 80% basket level</td><td class="warn">Bear / Base</td></tr>
+        <tr><td class="p">USD CPI Inflation Linker</td><td>US CPI Index</td><td>Asymmetric upside if energy-driven CPI overshoots. Clean inflation hedge — no directional oil view required.</td><td class="dm">CPI + 1.5% floor · 2-year · annual observation · partial protection</td><td class="warn">Bear / Base</td></tr>
+        <tr><td class="p">Energy Sector Barrier Note</td><td>XLE ETF</td><td>Enhanced yield on energy sector exposure. If XLE stays above 75% of current level, client earns elevated coupon.</td><td class="dm">20% p.a. coupon · quarterly observation · 75% European barrier</td><td class="warn">Base scenario</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="stit">Key Developments — 17 March 2026</div></div>
+    <div class="ni"><div><div class="nd">17 Mar<br>Today</div><div class="nr rf" style="margin-top:3px"></div></div><div><div class="ns">CNBC</div><div class="nh">Oil prices rise 4% on uncertainty over US-led Hormuz shipping coalition</div><div class="np">Brent +4% to $103.65, WTI +4.2% to $97.08 as of early trading. Trump signals coalition "not fully in place." Bessent confirms US allowing Iranian crude transit.</div><span class="ntag to">Oil</span><span class="ntag tw">Diplomacy</span></div></div>
+    <div class="ni"><div><div class="nd">10 Mar<br>2026</div><div class="nr rr" style="margin-top:3px"></div></div><div><div class="ns">EIA — Short-Term Energy Outlook</div><div class="nh">Brent to remain above $95/bbl for 2 months; then fall below $80 in Q3</div><div class="np">Brent settled $94 on Mar 9, up ~50% YTD. Henry Hub $3.76/MMBtu 2026 average. LNG disruption via Hormuz lifting European/Asian gas prices. US crude output to average 13.6M bbl/day.</div><span class="ntag to">Energy</span><span class="ntag tm">EIA Forecast</span></div></div>
+    <div class="ni"><div><div class="nd">17 Mar<br>Today</div><div class="nr rf" style="margin-top:3px"></div></div><div><div class="ns">TradingEconomics / Federal Reserve</div><div class="nh">Fed holds Wednesday — markets price only one 25bp cut in 2026 as energy inflation complicates outlook</div><div class="np">10Y Treasury 4.23%, near 4-week high after +13bps surge last week. No rate change expected at March 17–18 FOMC. Stagflation risk most elevated since 2022.</div><span class="ntag tm">Fed</span><span class="ntag tg">Inflation</span></div></div>
+    <div class="ni"><div><div class="nd">14 Mar<br>2026</div><div class="nr rr" style="margin-top:3px"></div></div><div><div class="ns">Yahoo Finance / AAA</div><div class="nh">US gasoline $3.67/gal — surged from $2.98 in 14 days as Persian Gulf strikes escalate</div><div class="np">National average now $3.67 after three successive weekly surges: $3.48 → $3.59 → $3.67. Below-$3 era of 13 consecutive weeks ended abruptly with conflict onset. California above $4.50.</div><span class="ntag tg">Inflation</span><span class="ntag to">Energy</span></div></div>
+  </div>
+</div>
+
+</div>
+
+<div class="ftr">
+  <div class="fl"><div><strong style="color:var(--t2)">Marex Solutions</strong> · Iran Conflict Market Impact Report · 17 March 2026 · Day 17</div><div>For professional investors and internal distribution only. Not investment advice. All prices indicative.</div></div>
+  <div class="fr"><div>Sources: CNBC · Investing.com · TradingEconomics · EIA · AAA · Yahoo Finance</div><div>NBC News · CBS News · CNN · Wikipedia 2026 Iran War · Congress.gov CRS</div></div>
+</div>
 
 <script>
-async function test() {
-  const el = document.getElementById('result');
-  el.textContent = 'Fetching...';
+function sw(name){
+  ['energy','macro','equities','conflict','polymarket','strategy'].forEach(t=>{
+    document.getElementById('tb-'+t).classList.toggle('on',t===name);
+    document.getElementById('pnl-'+t).classList.toggle('on',t===name);
+  });
+}
+
+// Live oil prices via Netlify function
+async function loadOilPrices() {
   try {
     const res = await fetch('/.netlify/functions/oil-prices');
     const data = await res.json();
-    if (data.error) {
-      el.innerHTML = '<span class="err">ERROR: ' + data.error + '</span>';
-      return;
-    }
-    let out = '';
+
     if (data.brent) {
-      out += '<span class="ok">✓ BRENT: $' + data.brent.price.toFixed(2) + ' (' + (data.brent.changePct >= 0 ? '+' : '') + data.brent.changePct.toFixed(2) + '%) — ' + data.brent.updated + '</span>\n';
-    } else {
-      out += '<span class="err">✗ BRENT: no data returned</span>\n';
+      const p = data.brent.price.toFixed(2);
+      const chg = data.brent.change.toFixed(2);
+      const pct = data.brent.changePct.toFixed(2);
+      const sign = data.brent.change >= 0 ? '+' : '';
+      const cls = data.brent.change >= 0 ? 'pos' : 'neg';
+
+      // KPI strip
+      document.querySelector('#kpi-brent-val').textContent = '$' + p;
+      const bChg = document.querySelector('#kpi-brent-chg');
+      bChg.textContent = sign + chg + ' · ' + sign + pct + '%';
+      bChg.className = 'kchg ' + cls;
+      document.querySelector('#kpi-brent-src').textContent = 'Alpha Vantage · ' + data.brent.updated;
+
+      // Bench card
+      document.querySelector('#bench-brent-val').textContent = '$' + p;
+      document.querySelector('#bench-brent-chg').textContent = sign + chg + ' (' + sign + pct + '%) · Source: Alpha Vantage';
     }
+
     if (data.wti) {
-      out += '<span class="ok">✓ WTI:   $' + data.wti.price.toFixed(2) + ' (' + (data.wti.changePct >= 0 ? '+' : '') + data.wti.changePct.toFixed(2) + '%) — ' + data.wti.updated + '</span>\n';
-    } else {
-      out += '<span class="err">✗ WTI: no data returned</span>\n';
+      const p = data.wti.price.toFixed(2);
+      const chg = data.wti.change.toFixed(2);
+      const pct = data.wti.changePct.toFixed(2);
+      const sign = data.wti.change >= 0 ? '+' : '';
+      const cls = data.wti.change >= 0 ? 'pos' : 'neg';
+
+      // KPI strip
+      document.querySelector('#kpi-wti-val').textContent = '$' + p;
+      const wChg = document.querySelector('#kpi-wti-chg');
+      wChg.textContent = sign + chg + ' · ' + sign + pct + '%';
+      wChg.className = 'kchg ' + cls;
+      document.querySelector('#kpi-wti-src').textContent = 'Alpha Vantage · ' + data.wti.updated;
+
+      // Bench card
+      document.querySelector('#bench-wti-val').textContent = '$' + p;
+      document.querySelector('#bench-wti-chg').textContent = sign + chg + ' (' + sign + pct + '%) · Source: Alpha Vantage';
     }
-    out += '\nRaw response:\n' + JSON.stringify(data, null, 2);
-    el.innerHTML = out;
-  } catch (err) {
-    el.innerHTML = '<span class="err">FETCH ERROR: ' + err.message + '</span>';
+
+  } catch(e) {
+    console.warn('Oil price fetch failed:', e);
   }
 }
+
+// Load on page open
+loadOilPrices();
 </script>
 </body>
 </html>
