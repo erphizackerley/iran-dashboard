@@ -9,28 +9,27 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    const [wtiRes, brentRes] = await Promise.all([
-      fetch(`https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${apiKey}`),
-      fetch(`https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${apiKey}`)
-    ]);
-
-    const wtiData = await wtiRes.json();
+    // Fetch sequentially to avoid rate limiting on free tier
+    const brentRes = await fetch(`https://www.alphavantage.co/query?function=BRENT&interval=daily&apikey=${apiKey}`);
     const brentData = await brentRes.json();
 
-    const wtiLatest  = wtiData?.data?.[0];
-    const wtiPrev    = wtiData?.data?.[1];
-    const brentLatest = brentData?.data?.[0];
-    const brentPrev   = brentData?.data?.[1];
+    const wtiRes = await fetch(`https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${apiKey}`);
+    const wtiData = await wtiRes.json();
 
-    const wtiPrice       = wtiLatest   ? parseFloat(wtiLatest.value)   : null;
-    const wtiPrevPrice   = wtiPrev     ? parseFloat(wtiPrev.value)     : null;
+    const brentLatest    = brentData?.data?.[0];
+    const brentPrev      = brentData?.data?.[1];
+    const wtiLatest      = wtiData?.data?.[0];
+    const wtiPrev        = wtiData?.data?.[1];
+
     const brentPrice     = brentLatest ? parseFloat(brentLatest.value) : null;
     const brentPrevPrice = brentPrev   ? parseFloat(brentPrev.value)   : null;
+    const wtiPrice       = wtiLatest   ? parseFloat(wtiLatest.value)   : null;
+    const wtiPrevPrice   = wtiPrev     ? parseFloat(wtiPrev.value)     : null;
 
-    const wtiChange      = wtiPrice && wtiPrevPrice     ? wtiPrice - wtiPrevPrice     : null;
-    const wtiChangePct   = wtiChange && wtiPrevPrice    ? (wtiChange / wtiPrevPrice) * 100   : null;
     const brentChange    = brentPrice && brentPrevPrice ? brentPrice - brentPrevPrice : null;
     const brentChangePct = brentChange && brentPrevPrice ? (brentChange / brentPrevPrice) * 100 : null;
+    const wtiChange      = wtiPrice && wtiPrevPrice ? wtiPrice - wtiPrevPrice : null;
+    const wtiChangePct   = wtiChange && wtiPrevPrice ? (wtiChange / wtiPrevPrice) * 100 : null;
 
     return {
       statusCode: 200,
