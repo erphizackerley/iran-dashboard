@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>API Test</title>
+<style>
+  body { background: #0E0E28; color: #FAFAFC; font-family: monospace; padding: 40px; }
+  .result { background: #1C1B4A; padding: 20px; margin-top: 20px; white-space: pre; font-size: 13px; }
+  button { background: #843FDC; color: white; border: none; padding: 10px 24px; cursor: pointer; font-family: monospace; font-size: 13px; }
+  button:hover { background: #6030B0; }
+  .ok { color: #4ecdb8; }
+  .err { color: #FF846A; }
+</style>
+</head>
+<body>
+  <h2>Oil Price Function Test</h2>
+  <p>Click the button to test the Netlify function is fetching live data from Alpha Vantage.</p>
+  <button onclick="test()">Test Live Oil Prices</button>
+  <div class="result" id="result">Waiting...</div>
+
+<script>
+async function test() {
+  const el = document.getElementById('result');
+  el.textContent = 'Fetching...';
+  try {
+    const res = await fetch('/.netlify/functions/oil-prices');
+    const data = await res.json();
+    if (data.error) {
+      el.innerHTML = '<span class="err">ERROR: ' + data.error + '</span>';
+      return;
+    }
+    let out = '';
+    if (data.brent) {
+      out += '<span class="ok">✓ BRENT: $' + data.brent.price.toFixed(2) + ' (' + (data.brent.changePct >= 0 ? '+' : '') + data.brent.changePct.toFixed(2) + '%) — ' + data.brent.updated + '</span>\n';
+    } else {
+      out += '<span class="err">✗ BRENT: no data returned</span>\n';
+    }
+    if (data.wti) {
+      out += '<span class="ok">✓ WTI:   $' + data.wti.price.toFixed(2) + ' (' + (data.wti.changePct >= 0 ? '+' : '') + data.wti.changePct.toFixed(2) + '%) — ' + data.wti.updated + '</span>\n';
+    } else {
+      out += '<span class="err">✗ WTI: no data returned</span>\n';
+    }
+    out += '\nRaw response:\n' + JSON.stringify(data, null, 2);
+    el.innerHTML = out;
+  } catch (err) {
+    el.innerHTML = '<span class="err">FETCH ERROR: ' + err.message + '</span>';
+  }
+}
+</script>
+</body>
+</html>
